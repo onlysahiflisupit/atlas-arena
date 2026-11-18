@@ -1,0 +1,15 @@
+Kenney supplied the following CC0 1.0 models, converted to indexed palette-colored geometry in kenney-models.js.
+
+- character.glb: Starter Kit 3D Platformer, commit 3fa8a04b1c01ab23db43123d4ce814a34c3fc7f0.
+  https://github.com/KenneyNL/Starter-Kit-3D-Platformer
+- building-small-a.glb, building-small-b.glb, building-garage.glb, grass-trees.glb: Starter Kit City Builder, commit 4535092b740b378b700efd9df9e27a631815b84a.
+  https://github.com/KenneyNL/Starter-Kit-City-Builder
+- cloud.glb: Starter Kit FPS, commit 185fd2326d74a5cf858cffc616f87cf9696f9cc0.
+  https://github.com/KenneyNL/Starter-Kit-FPS
+
+License statement for art is in the README of each upstream kit.
+https://creativecommons.org/publicdomain/zero/1.0/
+
+Arena designs, dinosaur models, themed structures and additional props were created for this game.
+Local rendering uses Three.js r160 under the license in /vendor/THREE-LICENSE.txt.
+https://github.com/mrdoob/three.js/tree/r160

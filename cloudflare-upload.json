@@ -1,0 +1,10 @@
+{
+  "main_module":"worker.js",
+  "compatibility_date":"2026-11-18",
+  "bindings":[
+    {"type":"durable_object_namespace","name":"ROOMS","class_name":"AtlasRoom"},
+    {"type":"durable_object_namespace","name":"DIRECTORY","class_name":"AtlasDirectory"},
+    {"type":"durable_object_namespace","name":"HISTORY","class_name":"AtlasHistory"}
+  ],
+  "migrations":{"new_tag":"v1","steps":[{"new_sqlite_classes":["AtlasRoom","AtlasDirectory","AtlasHistory"]}]}
+}
