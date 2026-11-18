@@ -33,7 +33,9 @@ $('closeDialog').onclick=()=>dialog.close();
 function field(parent,title,name,value,options,attrs={}){const node=el('label',title),input=el(options?'select':'input');if(options){for(const o of options){const op=el('option',o.label);op.value=o.id;input.append(op);}}Object.assign(input,attrs);input.name=name;input.value=value;node.append(input);parent.append(node);return input;}
 const maps=MAPS.map(m=>({id:m.id,label:m.tag+' · '+m.name}));
 function submit(text,run){const err=el('p','','formError');err.setAttribute('role','alert');const b=el('button',text,'primary');b.type='submit';form.append(err,b);form.onsubmit=async e=>{e.preventDefault();b.disabled=true;err.textContent='';try{await run(Object.fromEntries(new FormData(form)));dialog.close();}catch(e){err.textContent=e.message;}finally{b.disabled=false;}};}
-function settings(solo){
+async function settings(solo){
+  await ready;
+  if(!catalog.grades.length){toast('Katalog pelajaran belum tersedia. Muat ulang lobi.');return;}
   modal(solo?'Ekspedisi solo':'Buat room');const grid=el('div',null,'fields');form.append(grid);
   const f=field(grid,'Arena','map',map().id,maps);f.parentNode.className='wide';
   const subjectField=field(grid,'Mata pelajaran','subject','mix',catalog.subjects);field(grid,'Tingkat','grade','7',catalog.grades);
@@ -59,7 +61,7 @@ function roomCard(r){const b=el('button',null,'roomCard'),left=el('div');left.ap
 async function loadRooms(){if(!catalog.grades.length)return;const seq=++loadVersion;try{const data=await api('rooms?'+new URLSearchParams(screen==='rooms'?filters():{}));if(seq!==loadVersion)return;const empty=()=>blank('Belum ada room terbuka','Buat room publik agar pemain lain bisa bergabung.');
   $('brief').replaceChildren(...(data.length?data.slice(0,1).map(roomCard):[empty()]));$('roomList').replaceChildren(...(data.length?data.map(roomCard):[empty()]));
 }catch(e){if(seq===loadVersion){$('brief').replaceChildren(blank('Pencarian terputus','Coba muat ulang daftar room.'));$('roomList').replaceChildren(blank('Room belum dapat dimuat',e.message));}}}
-async function quick(filtered){try{const out=await api('quick',{...user,filters:filtered?filters():{}});connect(out.pin);}catch(e){page('rooms');toast(e.message);}}
+async function quick(filtered){await ready;try{const out=await api('quick',{...user,filters:filtered?filters():{}});connect(out.pin);}catch(e){page('rooms');toast(e.message);}}
 $('playQuick').onclick=()=>quick(false);$('filterQuick').onclick=()=>quick(true);$('refresh').onclick=loadRooms;
 function help(){modal('Cara bermain');const list=el('ol',null,'guideList');for(const t of ['Ikuti penunjuk arah menuju suar hijau. Dekati cincin untuk membuka soal.','Bidik pelat A–D atau sentuh pilihan jawaban. Pilihan terakhir yang diterima server terkunci ketika waktu habis. Jawaban benar bernilai 100 poin.','Komputer: WASD untuk bergerak, mouse untuk melihat, Shift berlari, Spasi melompat, C jongkok, V ganti kamera, 1–4 atau roda mouse ganti alat, Q kembali ke alat sebelumnya, R isi energi. Klik untuk menembak. F mengaktifkan fokus.','HP: gerakkan analog kiri, seret sisi kanan untuk melihat, lalu gunakan tombol aksi.','Esc melepaskan mouse. PG dan TK dapat menggunakan tombol Dengarkan jika suara Indonesia tersedia di perangkat.'])list.append(el('li',t));form.append(list);}
 $('guide').onclick=$('controlsBtn').onclick=help;
@@ -111,4 +113,4 @@ $('review').replaceChildren(...(d.review||[]).map((q,i)=>{const n=el('div',null,
 async function init(){try{await api('profile',{});catalog=await api('catalog');for(const [name,title,items] of [['map','Arena',maps],['subject','Pelajaran',catalog.subjects],['grade','Tingkat',catalog.grades]]){field($('filters'),title,name,'',[{id:'',label:'Semua'},...items]).onchange=loadRooms;}
 const requested=new URLSearchParams(location.search).get('pin');if(/^\d{6}$/.test(requested||''))join(requested);else if(sessionStorage.getItem('atlas-room'))connect(sessionStorage.getItem('atlas-room'));await loadRooms();
 setInterval(()=>{if(!document.hidden&&['home','rooms'].includes(screen))loadRooms();},15000);}catch(e){toast('Koneksi ke arena gagal. Muat ulang untuk mencoba kembali.');}}
-init();
+const ready=init();
